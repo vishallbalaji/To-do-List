@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './App.css';
 
 
 function App() {
@@ -139,35 +140,35 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
-      <h1>To do List</h1>
+    <div className="todo-container">
+      <h1 className="todo-header">To do List</h1>
 
-      {/* Input fields for adding new tasks */}
-      <input
-        type="text"
-        value={task}
-        onChange={(e) => setTask(e.target.value)}
-        placeholder="Enter a task"
-      />
-      <input
-        type="datetime-local"
-        value={taskDate}
-        onChange={(e) => setTaskDate(e.target.value)}
-        placeholder="Due Date"
-      />
-      <select
-        value={taskPriority}
-        onChange={(e) => setTaskPriority(e.target.value)}
-      >
-        <option value="Low">Low</option>
-        <option value="Medium">Medium</option>
-        <option value="High">High</option>
-      </select>
-      <button onClick={addTask}>Add</button>
+      <div className="input-group">
+        <input
+          type="text"
+          value={task}
+          onChange={(e) => setTask(e.target.value)}
+          placeholder="Enter a task"
+        />
+        <input
+          type="datetime-local"
+          value={taskDate}
+          onChange={(e) => setTaskDate(e.target.value)}
+          placeholder="Due Date"
+        />
+        <select
+          value={taskPriority}
+          onChange={(e) => setTaskPriority(e.target.value)}
+        >
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+        <button onClick={addTask}>Add</button>
+      </div>
 
-      {/* If editing, show the edit form */}
       {editingIndex !== null && (
-        <div>
+        <div className="edit-form">
           <h2>Edit Task</h2>
           <input
             type="text"
@@ -188,55 +189,70 @@ function App() {
             <option value="Medium">Medium</option>
             <option value="High">High</option>
           </select>
-          <button onClick={saveEdit}>Save</button>
-          <button onClick={cancelEdit}>Cancel</button>
+          <div className="edit-buttons">
+            <button className="save-button" onClick={saveEdit}>Save</button>
+            <button className="cancel-button" onClick={cancelEdit}>Cancel</button>
+          </div>
         </div>
       )}
 
-      {/* Task List */}
-      <ul>
-        <select onChange={(e) => setSortOption(e.target.value)}>
-          <option value="">Sort by...</option>
-          <option value="alphabetical">Alphabetically (A-Z)</option>
-          <option value="dateAdded">Date Added (Oldest → Newest)</option>
-          <option value="dueDate">Due Date (Earliest → Latest)</option>
-          <option value="priority">Priority (High → Low)</option>
-        </select>
+      <select className="sort-select" onChange={(e) => setSortOption(e.target.value)}>
+        <option value="">Sort by...</option>
+        <option value="alphabetical">Alphabetically (A-Z)</option>
+        <option value="dateAdded">Date Added (Oldest → Newest)</option>
+        <option value="dueDate">Due Date (Earliest → Latest)</option>
+        <option value="priority">Priority (High → Low)</option>
+      </select>
+
+      <ul className="task-list">
         {sortedTasks.map((t, index) => (
-          <li key={index} style={{ textDecoration: t.completed ? "line-through" : "none", color: t.priorityColor}}>
-            {t.text} 
-            {t.date && `- Due: ${new Date(t.date).toLocaleString()}`} 
-            - Priority: {t.priority}
-            <button onClick={() => toggleTask(index)}>✓</button>
-            <button onClick={() => removeTask(index)}>X</button>
-            <button onClick={() => startEdit(index)}>Edit</button>
-            <button onClick={() => moveTaskUp(index)}>↑</button>
-            <button onClick={() => moveTaskDown(index)}>↓</button>
+          <li key={index} className="task-item" style={{ borderLeftColor: t.priorityColor }}>
+            <div className={`task-content ${t.completed ? 'completed' : ''}`}>
+              <div className="task-main">
+                {t.text}
+                <div className="task-details">
+                  {t.date && <span className="task-date">Due: {new Date(t.date).toLocaleString()}</span>}
+                  <span className="task-priority">Priority: {t.priority}</span>
+                </div>
+              </div>
+              
+              <div className="task-actions">
+                <div className="button-group">
+                  <button className="task-button" onClick={() => toggleTask(index)}>✓</button>
+                  <button className="task-button" onClick={() => removeTask(index)}>X</button>
+                  <button className="task-button" onClick={() => startEdit(index)}>Edit</button>
+                  <button className="task-button" onClick={() => moveTaskUp(index)}>↑</button>
+                  <button className="task-button" onClick={() => moveTaskDown(index)}>↓</button>
+                </div>
+              </div>
 
-            {/* Subcategory input and button */}
-            <input 
-              type="text" 
-              placeholder="Add subcategory" 
-              onChange={(e) => setSubcategory(e.target.value)} 
-            />
-            <button onClick={() => addSubcategory(index)}>Add Subcategory</button>
+              <div className="subcategory-section">
+                <div className="subcategory-input">
+                  <input
+                    type="text"
+                    placeholder="Add subcategory"
+                    value={subcategory}
+                    onChange={(e) => setSubcategory(e.target.value)}
+                  />
+                  <button className="task-button" onClick={() => addSubcategory(index)}>+</button>
+                </div>
 
-            {/* Display subcategories */}
-            <ul>
-              {(task.subcategories || []).map((sub, subIndex) => (
-                <li key={subIndex}>{sub}</li>
-              ))}
-            </ul>
-            {/* Remove subcategories */}
-            <ul>
-              {(t.subcategories || []).map((sub, subIndex) => (
-                <li key={subIndex}>
-                  {sub}
-                  <button onClick={() => removeSubcategory(index, subIndex)}>Remove</button>
-                </li>
-              ))}
-            </ul>
-          </li> 
+                <ul className="subcategory-list">
+                  {(t.subcategories || []).map((sub, subIndex) => (
+                    <li key={subIndex} className="subcategory-item">
+                      {sub}
+                      <button 
+                        className="task-button remove-subcategory"
+                        onClick={() => removeSubcategory(index, subIndex)}
+                      >
+                        ×
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </li>
         ))}
       </ul>
     </div>
