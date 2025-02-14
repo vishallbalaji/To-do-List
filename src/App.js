@@ -19,6 +19,9 @@ function App() {
   const [editingDate, setEditingDate] = useState('');
   const [editingPriority, setEditingPriority] = useState('Low');
 
+  // State for sorting (alphabetical, date added, due date, and priority)
+  const [sortOption, setSortOption] = useState("");
+
   const addTask = () => {
     if (task.trim() && taskDate) {
 
@@ -101,6 +104,20 @@ function App() {
     }
   };
 
+  const sortedTasks = [...tasks];
+
+  if (sortOption === "alphabetical") {
+    sortedTasks.sort((a, b) => a.text.localeCompare(b.text));
+  } else if (sortOption === "dateAdded") {
+    sortedTasks.sort((a, b) => new Date(a.addedAt) - new Date(b.addedAt));
+  } else if (sortOption === "dueDate") {
+    sortedTasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+  } else if (sortOption === "priority") {
+    const priorityOrder = { High: 1, Medium: 2, Low: 3 };
+    sortedTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+  }
+
+
   return (
     <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
       <h1>To do List</h1>
@@ -158,7 +175,14 @@ function App() {
 
       {/* Task List */}
       <ul>
-        {tasks.map((t, index) => (
+        <select onChange={(e) => setSortOption(e.target.value)}>
+          <option value="">Sort by...</option>
+          <option value="alphabetical">Alphabetically (A-Z)</option>
+          <option value="dateAdded">Date Added (Oldest → Newest)</option>
+          <option value="dueDate">Due Date (Earliest → Latest)</option>
+          <option value="priority">Priority (High → Low)</option>
+        </select>
+        {sortedTasks.map((t, index) => (
           <li key={index} style={{ textDecoration: t.completed ? "line-through" : "none", color: t.priorityColor}}>
             {t.text} 
             {t.date && `- Due: ${new Date(t.date).toLocaleString()}`} 
