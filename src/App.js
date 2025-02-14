@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+
 function App() {
   // State for tasks, including text, completion status, and due date
   const [tasks, setTasks] = useState([]);
@@ -22,6 +23,9 @@ function App() {
   // State for sorting (alphabetical, date added, due date, and priority)
   const [sortOption, setSortOption] = useState("");
 
+  // State for subcategory input
+  const [subcategory, setSubcategory] = useState("");  
+
   const addTask = () => {
     if (task.trim() && taskDate) {
 
@@ -32,7 +36,7 @@ function App() {
       else if (taskPriority === "Low") priorityColor = "green";
 
       // Add task with due date
-      setTasks([...tasks, { text: task, completed: false, date: taskDate, priority: taskPriority, priorityColor}]);
+      setTasks([...tasks, { text: task, completed: false, date: taskDate, priority: taskPriority, priorityColor, subcategories: []}]);
       
       setTask(''); // reset task input
       setTaskDate(''); // reset date input
@@ -117,6 +121,22 @@ function App() {
     sortedTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
   }
 
+  // Function to add a subcategory
+  const addSubcategory = (taskIndex) => {
+  if (subcategory.trim()) {
+    const newTasks = [...tasks];
+    newTasks[taskIndex].subcategories.push(subcategory); // Add subcategory to task
+    setTasks(newTasks);
+    setSubcategory(""); // Reset subcategory input
+    }
+  };
+
+  //Function to remove a subcategory
+  const removeSubcategory = (taskIndex, subIndex) => {
+    const newTasks = [...tasks];
+    newTasks[taskIndex].subcategories.splice(subIndex, 1); // Remove subcategory
+    setTasks(newTasks);
+  };
 
   return (
     <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
@@ -190,10 +210,33 @@ function App() {
             <button onClick={() => toggleTask(index)}>✓</button>
             <button onClick={() => removeTask(index)}>X</button>
             <button onClick={() => startEdit(index)}>Edit</button>
-            {/* Add Move Up and Move Down buttons */}
             <button onClick={() => moveTaskUp(index)}>↑</button>
             <button onClick={() => moveTaskDown(index)}>↓</button>
-          </li>
+
+            {/* Subcategory input and button */}
+            <input 
+              type="text" 
+              placeholder="Add subcategory" 
+              onChange={(e) => setSubcategory(e.target.value)} 
+            />
+            <button onClick={() => addSubcategory(index)}>Add Subcategory</button>
+
+            {/* Display subcategories */}
+            <ul>
+              {(task.subcategories || []).map((sub, subIndex) => (
+                <li key={subIndex}>{sub}</li>
+              ))}
+            </ul>
+            {/* Remove subcategories */}
+            <ul>
+              {(t.subcategories || []).map((sub, subIndex) => (
+                <li key={subIndex}>
+                  {sub}
+                  <button onClick={() => removeSubcategory(index, subIndex)}>Remove</button>
+                </li>
+              ))}
+            </ul>
+          </li> 
         ))}
       </ul>
     </div>
