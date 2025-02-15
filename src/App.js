@@ -66,7 +66,7 @@ function App() {
 
   const saveEdit = () => {
 
-    //new color for the edited priority (if it applies)
+    //new color for the edited priority
     let priorityColor = "black"; 
     if (editingPriority === "High") priorityColor = "red";
     else if (editingPriority === "Medium") priorityColor = "orange";
